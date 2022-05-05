@@ -1,5 +1,5 @@
 import React from "react";
-
+import styled from "styled-components/native";
 import {
   StyleSheet,
   Text,
@@ -8,13 +8,19 @@ import {
   Platform,
   StatusBar as NativeStatusBar,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
-import { Button, TextInput } from "react-native-paper";
 import fonts from "../assets/theme/fonts";
 import colors from "../assets/theme/color";
 import { useController, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { loginRequest } from "../redux/auth.slice";
+
+const LoginButton = styled.TouchableOpacity``;
+const TextBox = styled(TextInput).attrs({
+  placeholderTextColor: "white",
+  autoCapitalize: "none",
+})``;
 
 const Input = ({ name, control, ...props }) => {
   const { field } = useController({
@@ -23,17 +29,12 @@ const Input = ({ name, control, ...props }) => {
     name,
   });
   return (
-    <TextInput value={field.value} onChangeText={field.onChange} {...props} />
+    <TextBox value={field.value} onChangeText={field.onChange} {...props} />
   );
 };
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      email: "rpsahani@mailinator.com",
-      password: "Ramprit@1234",
-    },
-  });
+  const { control, handleSubmit } = useForm();
 
   const onSubmit = (data) => {
     dispatch(loginRequest(data))
@@ -83,34 +84,57 @@ const Login = ({ navigation }) => {
           <Input
             control={control}
             name='email'
-            label='Email / Mobile Number'
+            placeholder='Email / Mobile Number'
             outlineColor={colors.white}
-            style={{ backgroundColor: "#ffff", height: 48 }}
+            style={{
+              height: 48,
+              borderWidth: 1,
+              borderColor: "white",
+              borderRadius: 24,
+              padding: 14,
+              color: "white",
+            }}
           />
           <Input
-            label='Password'
+            placeholder='Password'
             name='password'
             control={control}
             secureTextEntry={true}
             outlineColor={colors.white}
-            style={{ backgroundColor: "#ffff", height: 48, marginTop: 16 }}
+            style={{
+              height: 48,
+              borderWidth: 1,
+              borderColor: "white",
+              borderRadius: 24,
+              padding: 14,
+              color: "white",
+              marginTop: 16,
+            }}
           />
 
-          <Button
-            onPress={handleSubmit(onSubmit)}
-            color={colors.black}
-            labelStyle={{
-              fontFamily: fonts.Montserrat_500Medium,
-              fontSize: 14,
-              color: colors.black,
-            }}
+          <View
             style={{
               marginTop: 38,
               backgroundColor: "#ffff",
               borderRadius: 24,
             }}>
-            Login
-          </Button>
+            <LoginButton
+              onPress={handleSubmit(onSubmit)}
+              style={{
+                height: 48,
+              }}>
+              <Text
+                style={{
+                  color: colors.primary,
+                  fontFamily: fonts.Montserrat_500Medium,
+                  fontSize: 16,
+                  alignSelf: "center",
+                  marginTop: 13,
+                }}>
+                Login
+              </Text>
+            </LoginButton>
+          </View>
 
           <View style={{ marginLeft: 50, marginTop: 32 }}>
             <Text

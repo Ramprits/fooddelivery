@@ -1,5 +1,5 @@
 import React from "react";
-
+import styled from "styled-components/native";
 import {
   StyleSheet,
   Text,
@@ -8,20 +8,50 @@ import {
   Platform,
   StatusBar as NativeStatusBar,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
-import { Button, TextInput } from "react-native-paper";
 import fonts from "../assets/theme/fonts";
 import colors from "../assets/theme/color";
+import { useController, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { loginRequest } from "../redux/auth.slice";
 
-const Register = ({ navigation }) => {
+const LoginButton = styled.TouchableOpacity``;
+const TextBox = styled(TextInput).attrs({
+  placeholderTextColor: "white",
+  autoCapitalize: "none",
+})``;
+
+const Input = ({ name, control, ...props }) => {
+  const { field } = useController({
+    control,
+    defaultValue: "",
+    name,
+  });
   return (
-    <View style={styles.loginContainer}>
+    <TextBox value={field.value} onChangeText={field.onChange} {...props} />
+  );
+};
+const RegisterScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const { control, handleSubmit } = useForm();
+
+  const onSubmit = (data) => {
+    dispatch(loginRequest(data))
+      .unwrap()
+      .then((res) => {
+        navigation.navigate("Home");
+      })
+      .catch((err) => console.error(err));
+  };
+  return (
+    <View style={styles.registerContainer}>
       <SafeAreaView
         style={{
           marginTop:
             Platform.OS === "android" ? NativeStatusBar.currentHeight : null,
         }}>
-        <View style={{ marginTop: 40, marginLeft: 91 }}>
+        <View style={{ marginTop: 175, marginLeft: 70 }}>
           <Text
             style={{
               color: colors.primary,
@@ -33,7 +63,7 @@ const Register = ({ navigation }) => {
           </Text>
         </View>
 
-        <View style={{ marginTop: 30, marginLeft: 104 }}>
+        <View style={{ marginTop: 30, marginLeft: 90 }}>
           <Text
             style={{
               color: colors.primary,
@@ -41,7 +71,7 @@ const Register = ({ navigation }) => {
               fontSize: 16,
               color: colors.white,
             }}>
-            Signup to your account
+            Login to your account
           </Text>
         </View>
         <View
@@ -51,53 +81,60 @@ const Register = ({ navigation }) => {
             marginTop: 45,
             backgroundColor: "transparent",
           }}>
-          <TextInput
-            label='First Name'
+          <Input
+            control={control}
+            name='email'
+            placeholder='Email / Mobile Number'
             outlineColor={colors.white}
-            style={{ backgroundColor: "#ffff", height: 48, marginBottom: 14 }}
-          />
-
-          <TextInput
-            label='Last Name'
-            outlineColor={colors.white}
-            style={{ backgroundColor: "#ffff", height: 48, marginBottom: 14 }}
-          />
-
-          <TextInput
-            label='Email ID / Phone Number'
-            outlineColor={colors.white}
-            style={{ backgroundColor: "#ffff", height: 48, marginBottom: 14 }}
-          />
-
-          <TextInput
-            label='Password'
-            secureTextEntry={true}
-            outlineColor={colors.white}
-            style={{ backgroundColor: "#ffff", height: 48, marginBottom: 14 }}
-          />
-
-          <TextInput
-            label='Re-enter Password'
-            secureTextEntry={true}
-            outlineColor={colors.white}
-            style={{ backgroundColor: "#ffff", height: 48, marginBottom: 14 }}
-          />
-
-          <Button
-            onPress={() => console.log("Pressed")}
-            color={colors.black}
-            labelStyle={{
-              fontFamily: fonts.Montserrat_500Medium,
-              fontSize: 14,
-              color: colors.black,
-            }}
             style={{
-              marginTop: 14,
+              height: 48,
+              borderWidth: 1,
+              borderColor: "white",
+              borderRadius: 24,
+              padding: 14,
+              color: "white",
+            }}
+          />
+          <Input
+            placeholder='Password'
+            name='password'
+            control={control}
+            secureTextEntry={true}
+            outlineColor={colors.white}
+            style={{
+              height: 48,
+              borderWidth: 1,
+              borderColor: "white",
+              borderRadius: 24,
+              padding: 14,
+              color: "white",
+              marginTop: 16,
+            }}
+          />
+
+          <View
+            style={{
+              marginTop: 38,
               backgroundColor: "#ffff",
               borderRadius: 24,
             }}>
-            Create
-          </Button>
+            <LoginButton
+              onPress={handleSubmit(onSubmit)}
+              style={{
+                height: 48,
+              }}>
+              <Text
+                style={{
+                  color: colors.primary,
+                  fontFamily: fonts.Montserrat_500Medium,
+                  fontSize: 16,
+                  alignSelf: "center",
+                  marginTop: 13,
+                }}>
+                Login
+              </Text>
+            </LoginButton>
+          </View>
 
           <View style={{ marginLeft: 50, marginTop: 32 }}>
             <Text
@@ -110,17 +147,17 @@ const Register = ({ navigation }) => {
             </Text>
           </View>
 
-          <View style={{ marginLeft: 10, marginTop: 20, flexDirection: "row" }}>
+          <View style={{ marginLeft: 30, marginTop: 20, flexDirection: "row" }}>
             <Text
               style={{
                 fontFamily: fonts.Montserrat_400Regular,
                 fontSize: 18,
                 color: colors.white,
               }}>
-              Don’t you have an account?
+              Don’t have an account?
             </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => navigation.navigate("Register")}
               style={{ marginLeft: 5 }}>
               <Text
                 style={{
@@ -128,7 +165,7 @@ const Register = ({ navigation }) => {
                   fontSize: 18,
                   color: colors.white,
                 }}>
-                Sign In
+                Sign up
               </Text>
             </TouchableOpacity>
           </View>
@@ -138,10 +175,10 @@ const Register = ({ navigation }) => {
   );
 };
 
-export default Register;
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
-  loginContainer: {
+  registerContainer: {
     backgroundColor: "#13B58C",
     flex: 1,
   },
